@@ -1,0 +1,29 @@
+#+TITLE: xiaoshuo-mode
+#+author: dalu
+#+date: 2023-09-11
+
+* Table of Contents                                            :TOC:noexport:
+- [[#about][About]]
+- [[#variables][Variables]]
+- [[#functions][Functions]]
+- [[#setup][Setup]]
+
+* About
+
+为阅读中文小说提供一些包括 imenu 在内的基础功能。
+
+* Variables
+
+- =xiaoshuo-title-regexp=
+
+* Functions
+
+- =xiaoshuo-add-two-ideographic-spaces-at-content-bol= (=C-c C-a=)
+- =xiaoshuo-divide-file-chapter= (=C-c C-d=)
+
+* Setup
+
+#+begin_src elisp
+  (add-to-list 'load-path "path/to/xiaoshuo-mode")
+  (require 'xiaoshuo-mode)
+#+end_src
