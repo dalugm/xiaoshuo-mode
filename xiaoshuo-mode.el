@@ -96,10 +96,14 @@ Otherwise, use `xiaoshuo-title-regexp'."
           ;; in the first line.
           (unless (= (line-number-at-pos) 1)
             (beginning-of-line)
-            (newline 2))
-          ;; Add one new line below the chapter title.
+            (delete-all-space)
+            ;; After delete all spaces, insert three newlines to leave
+            ;; two blank lines above the chapter title.
+            (newline 3))
+          ;; Leave one blank line below the chapter title.
           (end-of-line)
-          (newline))
+          (delete-all-space)
+          (newline 2))
         ;; Forward line to continue the loop.
         (forward-line)))
     ;; Avoid extra newlines when chapter title is in the last line.
