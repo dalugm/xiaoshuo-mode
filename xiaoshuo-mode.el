@@ -36,7 +36,11 @@
   :group 'text)
 
 (defcustom xiaoshuo-title-regexp
-  (rx bol "第" (repeat 1 6 nonl) (any "章回话") (0+ nonl))
+  (rx bol
+      (0+ space)
+      "第" (repeat 1 6 nonl) (any "卷回章节话部")
+      (0+ nonl)
+      eol)
   "Chinese title regexp."
   :type 'regexp
   :group 'xiaoshuo)
