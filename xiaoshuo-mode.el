@@ -4,7 +4,7 @@
 ;; Maintainer: dalu <mou.tong@qq.com>
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "24"))
-;; Homepage: https://github.com/dalugm/xiaoshuo-mode
+;; URL: https://github.com/dalugm/xiaoshuo-mode
 ;; Keywords: text
 
 
