@@ -3,7 +3,7 @@
 ;; Author: dalu <mou.tong@qq.com>
 ;; Maintainer: dalu <mou.tong@qq.com>
 ;; Version: 0.2.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "30.1"))
 ;; URL: https://github.com/dalugm/xiaoshuo-mode
 ;; Keywords: text
 
@@ -81,14 +81,14 @@ Otherwise, use `xiaoshuo-title-regexp'."
         (cond
          ((save-excursion
             (beginning-of-line)
-            (re-search-forward title-regexp (line-end-position) t))
+            (re-search-forward title-regexp (pos-eol) t))
           ;; Do not modify title lines.
           (forward-line))
          ((save-excursion
             (beginning-of-line)
             (looking-at-p "[ \t　​]*$"))
           ;; Normalize whitespace-only lines to empty lines.
-          (delete-region (line-beginning-position) (line-end-position))
+          (delete-region (pos-bol) (pos-eol))
           (forward-line))
          (t
           (back-to-indentation)
@@ -114,10 +114,10 @@ Otherwise, use `xiaoshuo-title-regexp'."
       ;; Go to start position.
       (goto-char (point-min))
       (while (< (point) (point-max))
-        (when (re-search-forward title-regexp (line-end-position) t)
+        (when (re-search-forward title-regexp (pos-eol) t)
           ;; Add two new lines above the chapter title when it is not
           ;; in the first line.
-          (unless (= (line-number-at-pos) 1)
+          (unless (= (pos-bol) (point-min))
             (beginning-of-line)
             (delete-all-space)
             ;; After delete all spaces, insert three newlines to leave
