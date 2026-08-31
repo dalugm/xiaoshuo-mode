@@ -2,8 +2,8 @@
 
 ;; Author: dalu <mou.tong@qq.com>
 ;; Maintainer: dalu <mou.tong@qq.com>
-;; Version: 0.1.0
-;; Package-Requires: ((emacs "24"))
+;; Version: 0.2.0
+;; Package-Requires: ((emacs "29.1"))
 ;; URL: https://github.com/dalugm/xiaoshuo-mode
 ;; Keywords: text
 
@@ -45,6 +45,18 @@
   :type 'regexp
   :group 'xiaoshuo)
 
+(defun xiaoshuo--delete-horizontal-space ()
+  "Delete horizontal whitespace around point, including ideographic space."
+  (let* ((origin (point))
+         (beginning (progn
+                      (skip-chars-backward " \t　​")
+                      (point)))
+         (end (progn
+                (goto-char origin)
+                (skip-chars-forward " \t　​")
+                (point))))
+    (delete-region beginning end)))
+
 (defun xiaoshuo-add-two-ideographic-spaces-at-content-bol (&optional arg)
   "Add two ideographic spaces at content's non-empty line beginning.
 
@@ -53,7 +65,7 @@ otherwise on the whole buffer.
 
 When ARG is non-nil, execute this function based on input regexp.
 Otherwise, use `xiaoshuo-title-regexp'."
-  (interactive)
+  (interactive "P")
   (let ((title-regexp (if arg
                           (read-regexp "Title pattern: ")
                         xiaoshuo-title-regexp))
@@ -66,16 +78,23 @@ Otherwise, use `xiaoshuo-title-regexp'."
     (save-excursion
       (goto-char start)
       (while (< (point) end)
-        ;; Not deal with title and empty line.
-        (when (or (re-search-forward title-regexp (line-end-position) t)
-                  (= (line-beginning-position) (line-end-position)))
+        (cond
+         ((save-excursion
+            (beginning-of-line)
+            (re-search-forward title-regexp (line-end-position) t))
+          ;; Do not modify title lines.
           (forward-line))
-        (back-to-indentation)
-        (delete-space--internal " \t　​" nil)
-        ;; Insert ideographic space at non-blank line only.
-        (unless (= (pos-bol) (pos-eol))
-          (insert-char #x3000 2))
-        (forward-line)))))
+         ((save-excursion
+            (beginning-of-line)
+            (looking-at-p "[ \t　​]*$"))
+          ;; Normalize whitespace-only lines to empty lines.
+          (delete-region (line-beginning-position) (line-end-position))
+          (forward-line))
+         (t
+          (back-to-indentation)
+          (xiaoshuo--delete-horizontal-space)
+          (insert-char #x3000 2)
+          (forward-line)))))))
 
 (defun xiaoshuo-divide-file-chapter (&optional arg)
   "Add empty lines to divide chapters.
@@ -115,12 +134,10 @@ Otherwise, use `xiaoshuo-title-regexp'."
       (delete-all-space)
       (newline))))
 
-(defvar xiaoshuo-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-a") #'xiaoshuo-add-two-ideographic-spaces-at-content-bol)
-    (define-key map (kbd "C-c C-d") #'xiaoshuo-divide-file-chapter)
-    map)
-  "Keymap for `xiaoshuo-mode'.")
+(defvar-keymap xiaoshuo-mode-map
+  :doc "Keymap for `xiaoshuo-mode'."
+  "C-c C-a" #'xiaoshuo-add-two-ideographic-spaces-at-content-bol
+  "C-c C-d" #'xiaoshuo-divide-file-chapter)
 
 (define-derived-mode xiaoshuo-mode text-mode "XiaoShuo"
   "Major mode for reading Chinese novels."
